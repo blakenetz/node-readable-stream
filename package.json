@@ -1,0 +1,22 @@
+{
+  "name": "node-readable-stream",
+  "version": "1.0.0",
+  "description": "Examples of different processing of a node readable stream",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/blakenetz/node-readable-stream.git"
+  },
+  "keywords": [
+    "node"
+  ],
+  "author": "Blake Netzeband <blake.netzeband@gmail.com> (https://blakenetzeband.com/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blakenetz/node-readable-stream/issues"
+  },
+  "homepage": "https://github.com/blakenetz/node-readable-stream#readme"
+}
