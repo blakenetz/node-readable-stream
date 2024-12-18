@@ -1,55 +1,55 @@
 import prompts from "prompts";
 
-import {
-  asyncIteratorMode,
-  flowMode,
-  pauseMode,
-} from "./scripts/readable-flow";
+import execute from "./scripts/readable-flow";
+import { Values } from "./utils";
 
-const scripts: (prompts.Choice & { fn: () => Promise<void> })[] = [
+const choices: prompts.Choice[] = [
   {
     title: "Pause Mode",
     value: "pause-mode",
     description: "Uses `readable` listener",
-    fn: pauseMode,
-  },
-  {
-    title: "Pause Mode (invalid async)",
-    value: "pause-mode-async",
-    description: "Incorrect use of async in `readable` listener",
-    fn: pauseMode.bind(null, true),
   },
   {
     title: "Flow Mode",
     value: "flow-mode",
     description: "Uses `data` listener",
-    fn: flowMode,
-  },
-  {
-    title: "Flow Mode (invalid async)",
-    value: "flow-mode-async",
-    description: "Incorrect use of async in `data` listener",
-    fn: flowMode.bind(null, true),
   },
   {
     title: "Async Iterator Mode",
     value: "async-iterator-mode",
     description: "Uses `for await`",
-    fn: asyncIteratorMode,
   },
 ];
 
 const main = async () => {
-  const response = await prompts({
-    type: "select",
-    name: "script",
-    message: "Which script would you like to run?",
-    choices: scripts.map(({ fn: _fn, ...choice }) => choice),
-  });
+  const questions: prompts.PromptObject<string>[] = [
+    {
+      type: "select",
+      name: "script",
+      message: "Which script would you like to run?",
+      choices,
+    },
+    {
+      type: (prev: Values) =>
+        prev === "async-iterator-mode" ? null : "confirm",
+      name: "async",
+      message: "Demonstrate incorrect async implementation?",
+      initial: false,
+    },
+    {
+      type: "number",
+      name: "watermark",
+      message: "Updated highWaterMark value?",
+      initial: 65536,
+    },
+  ];
+
+  const response = await prompts(questions);
 
   if (response.script) {
-    const script = scripts.find((script) => script.value === response.script);
-    await script?.fn();
+    await execute(response.script, response.async, {
+      highWaterMark: response.watermark,
+    });
   }
 };
 

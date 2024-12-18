@@ -1,5 +1,13 @@
 import { createReadStream } from "node:fs";
-import { dataFile, wait } from "../utils";
+import { dataFile, Values } from "../utils";
+import { ReadableOptions } from "node:stream";
+
+const defaultOptions: ReadableOptions = {
+  highWaterMark: 65536,
+  encoding: "utf8",
+};
+
+const timeLabel = "🕐 Total execution time";
 
 const log = (
   stage: "start" | "chunk" | "end",
@@ -16,13 +24,14 @@ const log = (
   );
 };
 
-export const initializeReadStream = () => {
-  return createReadStream(dataFile, { encoding: "utf8" });
+export const wait = (ms: number = 1000) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export async function pauseMode(async: boolean = false) {
-  console.time("execution-time");
-  const stream = initializeReadStream();
+async function pauseMode(async: boolean, options: ReadableOptions) {
+  console.time(timeLabel);
+
+  const stream = createReadStream(dataFile, { ...defaultOptions, ...options });
   log("start", stream.readableFlowing);
 
   stream.on("readable", async () => {
@@ -36,14 +45,15 @@ export async function pauseMode(async: boolean = false) {
 
   stream.on("end", () => {
     log("end", stream.readableFlowing);
-    console.timeEnd("execution-time");
+    console.timeEnd(timeLabel);
     if (async) console.log("here comes the data...");
   });
 }
 
-export async function flowMode(async: boolean = false) {
-  console.time("execution-time");
-  const stream = initializeReadStream();
+async function flowMode(async: boolean, options: ReadableOptions) {
+  console.time(timeLabel);
+
+  const stream = createReadStream(dataFile, { ...defaultOptions, ...options });
   log("start", stream.readableFlowing);
 
   stream.on("data", async (chunk) => {
@@ -55,14 +65,15 @@ export async function flowMode(async: boolean = false) {
 
   stream.on("end", () => {
     log("end", stream.readableFlowing);
-    console.timeEnd("execution-time");
+    console.timeEnd(timeLabel);
     if (async) console.log("here comes the data...");
   });
 }
 
-export async function asyncIteratorMode() {
-  console.time("execution-time");
-  const stream = initializeReadStream();
+async function asyncIteratorMode(options: ReadableOptions) {
+  console.time(timeLabel);
+
+  const stream = createReadStream(dataFile, { ...defaultOptions, ...options });
   log("start", stream.readableFlowing);
 
   for await (const chunk of stream) {
@@ -70,5 +81,20 @@ export async function asyncIteratorMode() {
   }
 
   log("end", stream.readableFlowing);
-  console.timeEnd("execution-time");
+  console.timeEnd(timeLabel);
+}
+
+export default async function execute(
+  mode: Values,
+  async: boolean,
+  options: ReadableOptions
+) {
+  switch (mode) {
+    case "pause-mode":
+      return pauseMode(async, options);
+    case "flow-mode":
+      return flowMode(async, options);
+    case "async-iterator-mode":
+      return asyncIteratorMode(options);
+  }
 }
