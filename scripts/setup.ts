@@ -1,5 +1,5 @@
 import { writeFileSync, existsSync, mkdirSync } from "node:fs";
-import { dataDir, dataFile } from "../utils";
+import { dataDir, dataFile } from "@/util";
 
 async function main() {
   try {

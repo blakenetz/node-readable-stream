@@ -1,5 +1,5 @@
-import { createReadStream, ReadStream } from "node:fs";
-import { dataFile, Values } from "../utils";
+import { createReadStream } from "node:fs";
+import { dataFile, Values } from "./util";
 import { ReadableOptions } from "node:stream";
 
 const defaultOptions: ReadableOptions = {

@@ -1,7 +1,7 @@
 import prompts from "prompts";
 
-import execute from "./scripts/readable-flow";
-import { Values } from "./utils";
+import execute from "@/readable-flow";
+import { Values } from "@/util";
 
 type Choice = Omit<prompts.Choice, "value"> & { value: Values };
 
