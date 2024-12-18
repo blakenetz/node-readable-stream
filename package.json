@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/blakenetz/node-readable-stream/issues"
   },
-  "homepage": "https://github.com/blakenetz/node-readable-stream#readme"
+  "homepage": "https://github.com/blakenetz/node-readable-stream#readme",
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
 }
