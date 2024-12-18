@@ -21,6 +21,7 @@ export const initializeReadStream = () => {
 };
 
 export async function pauseMode(async: boolean = false) {
+  console.time("execution-time");
   const stream = initializeReadStream();
   log("start", stream.readableFlowing);
 
@@ -35,10 +36,13 @@ export async function pauseMode(async: boolean = false) {
 
   stream.on("end", () => {
     log("end", stream.readableFlowing);
+    console.timeEnd("execution-time");
+    if (async) console.log("here comes the data...");
   });
 }
 
 export async function flowMode(async: boolean = false) {
+  console.time("execution-time");
   const stream = initializeReadStream();
   log("start", stream.readableFlowing);
 
@@ -51,10 +55,13 @@ export async function flowMode(async: boolean = false) {
 
   stream.on("end", () => {
     log("end", stream.readableFlowing);
+    console.timeEnd("execution-time");
+    if (async) console.log("here comes the data...");
   });
 }
 
 export async function asyncIteratorMode() {
+  console.time("execution-time");
   const stream = initializeReadStream();
   log("start", stream.readableFlowing);
 
@@ -63,4 +70,5 @@ export async function asyncIteratorMode() {
   }
 
   log("end", stream.readableFlowing);
+  console.timeEnd("execution-time");
 }
