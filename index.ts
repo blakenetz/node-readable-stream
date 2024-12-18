@@ -1,6 +1,10 @@
 import prompts from "prompts";
 
-import { flowMode, pauseMode } from "./scripts/readable-flow";
+import {
+  asyncIteratorMode,
+  flowMode,
+  pauseMode,
+} from "./scripts/readable-flow";
 
 const scripts: (prompts.Choice & { fn: () => Promise<void> })[] = [
   {
@@ -12,7 +16,7 @@ const scripts: (prompts.Choice & { fn: () => Promise<void> })[] = [
   {
     title: "Pause Mode (invalid async)",
     value: "pause-mode-async",
-    description: "Uses `readable` listener",
+    description: "Incorrect use of async in `readable` listener",
     fn: pauseMode.bind(null, true),
   },
   {
@@ -24,8 +28,14 @@ const scripts: (prompts.Choice & { fn: () => Promise<void> })[] = [
   {
     title: "Flow Mode (invalid async)",
     value: "flow-mode-async",
-    description: "Uses `data` listener",
+    description: "Incorrect use of async in `data` listener",
     fn: flowMode.bind(null, true),
+  },
+  {
+    title: "Async Iterator Mode",
+    value: "async-iterator-mode",
+    description: "Uses `for await`",
+    fn: asyncIteratorMode,
   },
 ];
 

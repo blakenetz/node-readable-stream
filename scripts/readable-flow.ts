@@ -8,7 +8,7 @@ const log = (
 ) => {
   console.log(
     `[${stage}] ${[
-      `readableFlowing: ${readableFlowing}`,
+      `flowing: ${readableFlowing}`,
       chunkLength ? `${chunkLength} bytes` : false,
     ]
       .filter(Boolean)
@@ -21,8 +21,6 @@ export const initializeReadStream = () => {
 };
 
 export async function pauseMode(async: boolean = false) {
-  console.log(`Initialize using \`readable\` listener`);
-
   const stream = initializeReadStream();
   log("start", stream.readableFlowing);
 
@@ -41,8 +39,6 @@ export async function pauseMode(async: boolean = false) {
 }
 
 export async function flowMode(async: boolean = false) {
-  console.log(`Initialize using \`data\` listener`);
-
   const stream = initializeReadStream();
   log("start", stream.readableFlowing);
 
@@ -56,4 +52,15 @@ export async function flowMode(async: boolean = false) {
   stream.on("end", () => {
     log("end", stream.readableFlowing);
   });
+}
+
+export async function asyncIteratorMode() {
+  const stream = initializeReadStream();
+  log("start", stream.readableFlowing);
+
+  for await (const chunk of stream) {
+    log("chunk", stream.readableFlowing, chunk.length);
+  }
+
+  log("end", stream.readableFlowing);
 }
