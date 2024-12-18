@@ -1,29 +1,45 @@
-import fs from "node:fs";
-import { resolve } from "node:path";
 import prompts from "prompts";
 
-const blacklist = ["setup.ts"];
+import { flowMode, pauseMode } from "./scripts/readable-flow";
 
-const scriptDir = resolve(__dirname, "scripts");
+const scripts: (prompts.Choice & { fn: () => Promise<void> })[] = [
+  {
+    title: "Pause Mode",
+    value: "pause-mode",
+    description: "Uses `readable` listener",
+    fn: pauseMode,
+  },
+  {
+    title: "Pause Mode (invalid async)",
+    value: "pause-mode-async",
+    description: "Uses `readable` listener",
+    fn: pauseMode.bind(null, true),
+  },
+  {
+    title: "Flow Mode",
+    value: "flow-mode",
+    description: "Uses `data` listener",
+    fn: flowMode,
+  },
+  {
+    title: "Flow Mode (invalid async)",
+    value: "flow-mode-async",
+    description: "Uses `data` listener",
+    fn: flowMode.bind(null, true),
+  },
+];
 
 const main = async () => {
-  const files = fs
-    .readdirSync(scriptDir)
-    .filter((file) => !blacklist.includes(file));
-
   const response = await prompts({
     type: "select",
-    name: "file",
+    name: "script",
     message: "Which script would you like to run?",
-    choices: files.map((file) => ({
-      title: file.replace(".ts", "").replace(/_|-/g, " "),
-      value: file,
-    })),
+    choices: scripts.map(({ fn: _fn, ...choice }) => choice),
   });
 
-  if (response.file) {
-    const filePath = resolve(scriptDir, response.file);
-    await import(filePath);
+  if (response.script) {
+    const script = scripts.find((script) => script.value === response.script);
+    await script?.fn();
   }
 };
 
