@@ -11,3 +11,15 @@ export const initializeReadStream = () => {
 export const wait = (ms: number = 1000) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+export const log = (
+  stage: "start" | "chunk" | "end",
+  readableFlowing: boolean | null,
+  content?: string
+) => {
+  console.log(
+    `[${stage}] ${[`readableFlowing: ${readableFlowing}`, content]
+      .filter(Boolean)
+      .join(" | ")}`
+  );
+};

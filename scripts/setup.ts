@@ -8,16 +8,15 @@ async function main() {
       console.log(`Creating directory: ${dataDir}`);
       mkdirSync(dataDir);
     }
-    // generate data file
-    if (!existsSync(dataFile)) {
-      console.log(`Creating file: ${dataFile}`);
-      const content = Array.from(
-        { length: 10 },
-        (_, i) => `Line ${i + 1}`
-      ).join("\n");
 
-      writeFileSync(dataFile, content);
-    }
+    // generate data file
+    console.log(`Creating file: ${dataFile}`);
+    const content = Array.from(
+      { length: 100000 },
+      (_, i) => `Line ${i + 1}`
+    ).join("\n");
+
+    writeFileSync(dataFile, content);
   } catch (error) {
     console.error("Error checking file:", error);
     process.exit(1);

@@ -1,21 +1,18 @@
-import { initializeReadStream, wait } from "../utils";
+import { initializeReadStream, log, wait } from "../utils";
 
 async function main() {
   const stream = initializeReadStream();
-  console.log(`INIT!initial flow state: ${stream.readableFlowing}`);
+  console.log(`Initialize using \`data\` listener`);
+  log("start", stream.readableFlowing);
 
   stream.on("data", async (chunk) => {
-    console.log(chunk.toString());
+    log("chunk", stream.readableFlowing, `${chunk.length} bytes`);
   });
 
-  console.log(`active flow state: ${stream.readableFlowing}`);
-
-  stream.on("error", (error) => {
-    console.error("Error reading file:", error);
-  });
+  stream.on("error", console.error);
 
   stream.on("end", () => {
-    console.log(`FINAL! flow state: ${stream.readableFlowing}`);
+    log("end", stream.readableFlowing);
   });
 }
 
