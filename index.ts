@@ -3,7 +3,9 @@ import prompts from "prompts";
 import execute from "./scripts/readable-flow";
 import { Values } from "./utils";
 
-const choices: prompts.Choice[] = [
+type Choice = Omit<prompts.Choice, "value"> & { value: Values };
+
+const choices: Choice[] = [
   {
     title: "Pause Mode",
     value: "pause-mode",
@@ -30,8 +32,7 @@ const main = async () => {
       choices,
     },
     {
-      type: (prev: Values) =>
-        prev === "async-iterator-mode" ? null : "confirm",
+      type: (prev) => (prev === "async-iterator-mode" ? null : "confirm"),
       name: "async",
       message: "Demonstrate incorrect async implementation?",
       initial: false,

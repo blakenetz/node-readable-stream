@@ -3,7 +3,6 @@ import { dataFile, Values } from "../utils";
 import { ReadableOptions } from "node:stream";
 
 const defaultOptions: ReadableOptions = {
-  highWaterMark: 65536,
   encoding: "utf8",
 };
 
