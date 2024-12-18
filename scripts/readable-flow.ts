@@ -1,4 +1,4 @@
-import { createReadStream } from "node:fs";
+import { createReadStream, ReadStream } from "node:fs";
 import { dataFile, Values } from "../utils";
 import { ReadableOptions } from "node:stream";
 
@@ -24,77 +24,53 @@ const log = (
   );
 };
 
-export const wait = (ms: number = 1000) => {
+const wait = (ms: number = 1000) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
-
-async function pauseMode(async: boolean, options: ReadableOptions) {
-  console.time(timeLabel);
-
-  const stream = createReadStream(dataFile, { ...defaultOptions, ...options });
-  log("start", stream.readableFlowing);
-
-  stream.on("readable", async () => {
-    const chunk = stream.read();
-    if (async) await wait();
-
-    if (chunk !== null) log("chunk", stream.readableFlowing, chunk.length);
-  });
-
-  stream.on("error", console.error);
-
-  stream.on("end", () => {
-    log("end", stream.readableFlowing);
-    console.timeEnd(timeLabel);
-    if (async) console.log("here comes the data...");
-  });
-}
-
-async function flowMode(async: boolean, options: ReadableOptions) {
-  console.time(timeLabel);
-
-  const stream = createReadStream(dataFile, { ...defaultOptions, ...options });
-  log("start", stream.readableFlowing);
-
-  stream.on("data", async (chunk) => {
-    if (async) await wait();
-    log("chunk", stream.readableFlowing, chunk.length);
-  });
-
-  stream.on("error", console.error);
-
-  stream.on("end", () => {
-    log("end", stream.readableFlowing);
-    console.timeEnd(timeLabel);
-    if (async) console.log("here comes the data...");
-  });
-}
-
-async function asyncIteratorMode(options: ReadableOptions) {
-  console.time(timeLabel);
-
-  const stream = createReadStream(dataFile, { ...defaultOptions, ...options });
-  log("start", stream.readableFlowing);
-
-  for await (const chunk of stream) {
-    log("chunk", stream.readableFlowing, chunk.length);
-  }
-
-  log("end", stream.readableFlowing);
-  console.timeEnd(timeLabel);
-}
 
 export default async function execute(
   mode: Values,
   async: boolean,
   options: ReadableOptions
 ) {
+  // start timer
+  console.time(timeLabel);
+
+  // initialize stream with handler
+  const stream = createReadStream(dataFile, { ...defaultOptions, ...options });
+  stream.on("error", console.error);
+  stream.on("end", () => {
+    log("end", stream.readableFlowing);
+    if (async) console.log("here comes the data...");
+  });
+
+  log("start", stream.readableFlowing);
+
+  // add chunk handling
   switch (mode) {
     case "pause-mode":
-      return pauseMode(async, options);
+      stream.on("readable", async () => {
+        const chunk = stream.read();
+        if (async) await wait();
+
+        if (chunk !== null) log("chunk", stream.readableFlowing, chunk.length);
+      });
+      break;
+
     case "flow-mode":
-      return flowMode(async, options);
+      stream.on("data", async (chunk) => {
+        if (async) await wait();
+        log("chunk", stream.readableFlowing, chunk.length);
+      });
+      break;
+
     case "async-iterator-mode":
-      return asyncIteratorMode(options);
+      for await (const chunk of stream) {
+        log("chunk", stream.readableFlowing, chunk.length);
+      }
+      break;
   }
+
+  // end timer
+  console.timeEnd(timeLabel);
 }
