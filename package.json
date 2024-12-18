@@ -2,9 +2,10 @@
   "name": "node-readable-stream",
   "version": "1.0.0",
   "description": "Examples of different processing of a node readable stream",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsx index.ts",
+    "setup": "tsx scripts/setup.ts"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,8 @@
   },
   "homepage": "https://github.com/blakenetz/node-readable-stream#readme",
   "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
 }
